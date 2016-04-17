@@ -1,6 +1,7 @@
 package suzp1984.github.io.androidclock.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -11,6 +12,8 @@ import android.view.View;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import suzp1984.github.io.androidclock.R;
 
 /**
  * Created by jacobsu on 4/16/16.
@@ -154,6 +157,7 @@ public class ClockView extends View {
 
     private Paint mBallPaint;
     private Paint mRectPaint;
+    private int mBallColor;
 
     private RectF mBounds;
 
@@ -172,17 +176,15 @@ public class ClockView extends View {
     public ClockView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        initAttributes(context, attrs);
+
         init();
     }
 
     public ClockView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        init();
-    }
-
-    public ClockView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+        initAttributes(context, attrs);
 
         init();
     }
@@ -222,9 +224,22 @@ public class ClockView extends View {
         setMeasuredDimension(w, h);
     }*/
 
+    private void initAttributes(Context context, AttributeSet attrs) {
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ClockView, 0, 0);
+
+        try {
+            mBallColor = a.getColor(R.styleable.ClockView_ballColor, 0x201f1f);
+        } finally {
+            a.recycle();
+        }
+    }
+
     private void init() {
         mBallPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mBallPaint.setColor(0xff201F1F);
+        // mBallPaint.setColor(0xff201F1F);
+        mBallColor = mBallColor != 0 ? mBallColor : 0x201f1f;
+
+        mBallPaint.setColor(mBallColor);
         mBallPaint.setStyle(Paint.Style.FILL);
 
         mRectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
