@@ -9,9 +9,12 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 
 import suzp1984.github.io.androidclock.R;
 
@@ -155,6 +158,10 @@ public class ClockView extends View {
             }//:
     };
 
+    private int COLORS[] = {
+            0xffff0000, 0xff00ff00, 0xff0000ff, 0xff1f1f00, 0xff001f1f, 0xffee1010, 0xff10f1f1
+    };
+
     private Paint mBallPaint;
     private Paint mRectPaint;
 
@@ -170,6 +177,14 @@ public class ClockView extends View {
     private int mRadius;
     private int mArcPadding;
 
+    private int mCurrentHours;
+    private int mCurrentMinutes;
+    private int mCurrentSeconds;
+
+    private int mWidth;
+    private int mHeight;
+
+    private List<Ball> mBalls;
 
     public ClockView(Context context) {
         super(context);
@@ -207,6 +222,9 @@ public class ClockView extends View {
     @Override
     public void onSizeChanged(int w, int h, int oldW, int oldH) {
         Log.d("ClockView", "w: " + w + "; h: " + h + "; oldW: " + oldW + "; oldH: " + oldH);
+
+        mWidth = w;
+        mHeight = h;
 
         mBounds = new RectF(0, 0, w, h);
         int xpad = getPaddingLeft() + getPaddingRight();
@@ -277,14 +295,15 @@ public class ClockView extends View {
     }
 
     private void init() {
+        mBalls = new Vector<>();
+
         mBallColor = mBallColor != 0 ? mBallColor : 0x201f1f;
         mBorderColor = mBorderColor != 0 ? mBorderColor : 0xffff0000;
         mBorderWidth = mBorderWidth != 0 ? mBorderWidth : 1;
 
 
         mBallPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        // mBallPaint.setColor(0xff201F1F);
-
+        //mBallPaint.setColor(0xff201F1F);
         mBallPaint.setColor(mBallColor);
         mBallPaint.setStyle(Paint.Style.FILL);
 
@@ -297,9 +316,48 @@ public class ClockView extends View {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                Calendar c = Calendar.getInstance();
+                int nextHours = c.get(Calendar.HOUR);
+                int nextMinutes = c.get(Calendar.MINUTE);
+                int nextSeconds = c.get(Calendar.SECOND);
+
+                if (mCurrentSeconds != nextSeconds) {
+                    // add ballls
+                    if (mCurrentHours / 10 != nextHours / 10) {
+                        addBalls(mMarginLeft, mMarginTop, mCurrentHours / 10);
+                    }
+
+                    if (mCurrentHours % 10 != nextHours % 10) {
+                        addBalls(mMarginLeft + (mRadius + mArcPadding) * 15, mMarginTop, mCurrentHours % 10);
+                    }
+
+                    if (mCurrentMinutes / 10 != nextMinutes / 10) {
+                        addBalls(mMarginLeft + (mRadius + mArcPadding) * 39, mMarginTop, mCurrentMinutes / 10);
+                    }
+
+                    if (mCurrentMinutes % 10 != nextMinutes % 10) {
+                        addBalls(mMarginLeft + (mRadius + mArcPadding) * 54, mMarginTop, mCurrentMinutes % 10);
+                    }
+
+                    if (mCurrentSeconds / 10 != nextSeconds / 10) {
+                        addBalls(mMarginLeft + (mRadius + mArcPadding) * 78, mMarginTop, mCurrentSeconds / 10);
+                    }
+
+                    if (mCurrentSeconds % 10 != nextSeconds % 10) {
+                        addBalls(mMarginLeft + (mRadius + mArcPadding) * 93, mMarginTop, mCurrentSeconds % 10);
+                    }
+                }
+
+                mCurrentHours = nextHours;
+                mCurrentMinutes = nextMinutes;
+                mCurrentSeconds = nextSeconds;
+
+                updateBalls();
+
                 postInvalidate();
+
             }
-        }, 0, 500);
+        }, 0, 50);
     }
 
     private void drawDigit(Canvas canvas, int x, int y, int numb) {
@@ -321,11 +379,17 @@ public class ClockView extends View {
     }
 
     private void render(Canvas canvas) {
+        /*
         Calendar c = Calendar.getInstance();
 
         int hour = c.get(Calendar.HOUR);
         int minutes = c.get(Calendar.MINUTE);
-        int seconds = c.get(Calendar.SECOND);;
+        int seconds = c.get(Calendar.SECOND);
+        */
+
+        int hour = mCurrentHours;
+        int minutes = mCurrentMinutes;
+        int seconds= mCurrentSeconds;
 
         drawDigit(canvas, mMarginLeft, mMarginTop, hour/10);
         drawDigit(canvas, mMarginLeft + (mRadius + mArcPadding) * 15, mMarginTop, hour % 10);
@@ -340,6 +404,79 @@ public class ClockView extends View {
         drawDigit(canvas, mMarginLeft + (mRadius + mArcPadding) * 78, mMarginTop, seconds / 10);
         drawDigit(canvas, mMarginLeft + (mRadius + mArcPadding) * 93, mMarginTop, seconds % 10);
 
+        for (int i = 0; i < mBalls.size(); i++) {
+            Ball b = mBalls.get(i);
+
+            mBallPaint.setColor(b.color);
+            canvas.drawArc(b.x - mRadius - mArcPadding, b.y - mRadius - mArcPadding,
+                    b.x + mRadius + mArcPadding, b.y + mRadius + mArcPadding, 0, 360, true, mBallPaint);
+        }
+
+        mBallPaint.setColor(mBallColor);
     }
 
+    private void updateBalls() {
+        if (mBalls.size() == 0) {
+            return;
+        }
+
+        for (Ball b : mBalls) {
+            b.x += b.vx;
+            b.y += b.vy;
+            b.vy += b.g;
+
+            if (b.y >= mHeight - mRadius) {
+                b.y = mHeight - mRadius;
+                b.vy = (int)(-b.vy * 0.75);
+            }
+        }
+
+        for(int i = 0; i < mBalls.size(); i++) {
+            Ball b = mBalls.get(i);
+            if ((b.x + mRadius) < 0 || (b.x + mRadius) > mWidth) {
+                mBalls.remove(b);
+            }
+        }
+    }
+
+    private void addBalls(int x, int y, int num) {
+        if (num > 10) {
+            num = num % 10;
+        }
+
+        for(int i = 0; i < DIGITS[num].length; i++) {
+            for(int j = 0; j < DIGITS[num][i].length; j++) {
+                if (DIGITS[num][i][j] == 1) {
+                    int bx = x + j*2*(mRadius + mArcPadding) + (mRadius + mArcPadding);
+                    int by = y + i*2*(mRadius + mArcPadding) + (mRadius + mArcPadding);
+                    float g = (float) (1.5 + Math.random());
+                    int vx = (int) (-4 + Math.random() * 9);
+                    int vy = -5;
+                    int color = COLORS[(int)(Math.random() * COLORS.length)];
+
+                    Ball b = new Ball(bx, by, vx, vy, g, color);
+
+                    mBalls.add(b);
+                }
+            }
+        }
+    }
+
+    public class Ball {
+        public int x;
+        public int y;
+        public int vx;
+        public int vy;
+        public float g;
+        public int color;
+
+        public Ball(int x, int y, int vx, int vy, float g, int color) {
+            this.x = x;
+            this.y = y;
+            this.vx = vx;
+            this.vy = vy;
+            this.g = g;
+            this.color = color;
+        }
+    }
 }
