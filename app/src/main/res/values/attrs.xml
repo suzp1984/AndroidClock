@@ -2,5 +2,8 @@
 <resources>
     <declare-styleable name="ClockView">
         <attr name="ballColor" format="color" />
+        <attr name="showBorder" format="boolean" />
+        <attr name="borderColor" format="color" />
+        <attr name="borderWidth" format="integer" />
     </declare-styleable>
 </resources>

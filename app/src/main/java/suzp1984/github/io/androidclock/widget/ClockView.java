@@ -157,7 +157,11 @@ public class ClockView extends View {
 
     private Paint mBallPaint;
     private Paint mRectPaint;
+
     private int mBallColor;
+    private boolean mShowBorder = false;
+    private int mBorderColor;
+    private int mBorderWidth;
 
     private RectF mBounds;
 
@@ -192,8 +196,10 @@ public class ClockView extends View {
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        
-        canvas.drawRect(mBounds, mRectPaint);
+
+        if (mShowBorder) {
+            canvas.drawRect(mBounds, mRectPaint);
+        }
 
         render(canvas);
     }
@@ -224,27 +230,67 @@ public class ClockView extends View {
         setMeasuredDimension(w, h);
     }*/
 
+    public int getBallColor() {
+        return mBallColor;
+    }
+
+    public void setBallColor(int mBallColor) {
+        this.mBallColor = mBallColor;
+    }
+
+    public boolean isShowBorder() {
+        return mShowBorder;
+    }
+
+    public void setShowBorder(boolean mShowBorder) {
+        this.mShowBorder = mShowBorder;
+    }
+
+    public int getBorderColor() {
+        return mBorderColor;
+    }
+
+    public void setBorderColor(int mBorderColor) {
+        this.mBorderColor = mBorderColor;
+    }
+
+    public int getBorderWidth() {
+        return mBorderWidth;
+    }
+
+    public void setBorderWidth(int mBorderWidth) {
+        this.mBorderWidth = mBorderWidth;
+    }
+
+
     private void initAttributes(Context context, AttributeSet attrs) {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ClockView, 0, 0);
 
         try {
             mBallColor = a.getColor(R.styleable.ClockView_ballColor, 0x201f1f);
+            mShowBorder = a.getBoolean(R.styleable.ClockView_showBorder, false);
+            mBorderColor = a.getColor(R.styleable.ClockView_borderColor, 0xffff0000);
+            mBorderWidth = a.getInt(R.styleable.ClockView_borderWidth, 2);
         } finally {
             a.recycle();
         }
     }
 
     private void init() {
+        mBallColor = mBallColor != 0 ? mBallColor : 0x201f1f;
+        mBorderColor = mBorderColor != 0 ? mBorderColor : 0xffff0000;
+        mBorderWidth = mBorderWidth != 0 ? mBorderWidth : 1;
+
+
         mBallPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         // mBallPaint.setColor(0xff201F1F);
-        mBallColor = mBallColor != 0 ? mBallColor : 0x201f1f;
 
         mBallPaint.setColor(mBallColor);
         mBallPaint.setStyle(Paint.Style.FILL);
 
         mRectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mRectPaint.setColor(0xffff0000);
-        mRectPaint.setStrokeWidth(1);
+        mRectPaint.setColor(mBorderColor);
+        mRectPaint.setStrokeWidth(mBorderWidth);
         mRectPaint.setStyle(Paint.Style.STROKE);
 
         Timer timer = new Timer();
