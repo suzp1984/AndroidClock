@@ -11,6 +11,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -295,12 +296,11 @@ public class ClockView extends View {
     }
 
     private void init() {
-        mBalls = new Vector<>();
+        mBalls = new ArrayList<>();
 
         mBallColor = mBallColor != 0 ? mBallColor : 0x201f1f;
         mBorderColor = mBorderColor != 0 ? mBorderColor : 0xffff0000;
         mBorderWidth = mBorderWidth != 0 ? mBorderWidth : 1;
-
 
         mBallPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         //mBallPaint.setColor(0xff201F1F);
@@ -321,38 +321,40 @@ public class ClockView extends View {
                 int nextMinutes = c.get(Calendar.MINUTE);
                 int nextSeconds = c.get(Calendar.SECOND);
 
-                if (mCurrentSeconds != nextSeconds) {
-                    // add ballls
-                    if (mCurrentHours / 10 != nextHours / 10) {
-                        addBalls(mMarginLeft, mMarginTop, mCurrentHours / 10);
+                synchronized (this) {
+                    if (mCurrentSeconds != nextSeconds) {
+                        // add ballls
+                        if (mCurrentHours / 10 != nextHours / 10) {
+                            addBalls(mMarginLeft, mMarginTop, mCurrentHours / 10);
+                        }
+
+                        if (mCurrentHours % 10 != nextHours % 10) {
+                            addBalls(mMarginLeft + (mRadius + mArcPadding) * 15, mMarginTop, mCurrentHours % 10);
+                        }
+
+                        if (mCurrentMinutes / 10 != nextMinutes / 10) {
+                            addBalls(mMarginLeft + (mRadius + mArcPadding) * 39, mMarginTop, mCurrentMinutes / 10);
+                        }
+
+                        if (mCurrentMinutes % 10 != nextMinutes % 10) {
+                            addBalls(mMarginLeft + (mRadius + mArcPadding) * 54, mMarginTop, mCurrentMinutes % 10);
+                        }
+
+                        if (mCurrentSeconds / 10 != nextSeconds / 10) {
+                            addBalls(mMarginLeft + (mRadius + mArcPadding) * 78, mMarginTop, mCurrentSeconds / 10);
+                        }
+
+                        if (mCurrentSeconds % 10 != nextSeconds % 10) {
+                            addBalls(mMarginLeft + (mRadius + mArcPadding) * 93, mMarginTop, mCurrentSeconds % 10);
+                        }
                     }
 
-                    if (mCurrentHours % 10 != nextHours % 10) {
-                        addBalls(mMarginLeft + (mRadius + mArcPadding) * 15, mMarginTop, mCurrentHours % 10);
-                    }
+                    mCurrentHours = nextHours;
+                    mCurrentMinutes = nextMinutes;
+                    mCurrentSeconds = nextSeconds;
 
-                    if (mCurrentMinutes / 10 != nextMinutes / 10) {
-                        addBalls(mMarginLeft + (mRadius + mArcPadding) * 39, mMarginTop, mCurrentMinutes / 10);
-                    }
-
-                    if (mCurrentMinutes % 10 != nextMinutes % 10) {
-                        addBalls(mMarginLeft + (mRadius + mArcPadding) * 54, mMarginTop, mCurrentMinutes % 10);
-                    }
-
-                    if (mCurrentSeconds / 10 != nextSeconds / 10) {
-                        addBalls(mMarginLeft + (mRadius + mArcPadding) * 78, mMarginTop, mCurrentSeconds / 10);
-                    }
-
-                    if (mCurrentSeconds % 10 != nextSeconds % 10) {
-                        addBalls(mMarginLeft + (mRadius + mArcPadding) * 93, mMarginTop, mCurrentSeconds % 10);
-                    }
+                    updateBalls();
                 }
-
-                mCurrentHours = nextHours;
-                mCurrentMinutes = nextMinutes;
-                mCurrentSeconds = nextSeconds;
-
-                updateBalls();
 
                 postInvalidate();
 
@@ -404,18 +406,27 @@ public class ClockView extends View {
         drawDigit(canvas, mMarginLeft + (mRadius + mArcPadding) * 78, mMarginTop, seconds / 10);
         drawDigit(canvas, mMarginLeft + (mRadius + mArcPadding) * 93, mMarginTop, seconds % 10);
 
-        for (int i = 0; i < mBalls.size(); i++) {
-            Ball b = mBalls.get(i);
+        /*List<Ball> balls;
 
-            mBallPaint.setColor(b.color);
-            canvas.drawArc(b.x - mRadius - mArcPadding, b.y - mRadius - mArcPadding,
-                    b.x + mRadius + mArcPadding, b.y + mRadius + mArcPadding, 0, 360, true, mBallPaint);
+        synchronized (this) {
+            balls = new ArrayList<>(mBalls.size());
+            Collections.copy(balls, mBalls);
+        }*/
+
+        synchronized (this) {
+            for (int i = 0; i < mBalls.size(); i++) {
+                Ball b = mBalls.get(i);
+
+                mBallPaint.setColor(b.color);
+                canvas.drawArc(b.x - mRadius - mArcPadding, b.y - mRadius - mArcPadding,
+                        b.x + mRadius + mArcPadding, b.y + mRadius + mArcPadding, 0, 360, true, mBallPaint);
+            }
         }
 
         mBallPaint.setColor(mBallColor);
     }
 
-    private void updateBalls() {
+    private synchronized void updateBalls() {
         if (mBalls.size() == 0) {
             return;
         }
@@ -439,7 +450,7 @@ public class ClockView extends View {
         }
     }
 
-    private void addBalls(int x, int y, int num) {
+    private synchronized void addBalls(int x, int y, int num) {
         if (num > 10) {
             num = num % 10;
         }
