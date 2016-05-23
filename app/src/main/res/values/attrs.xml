@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ClockView">
-        <attr name="ballColor" format="color" />
-        <attr name="showBorder" format="boolean" />
-        <attr name="borderColor" format="color" />
-        <attr name="borderWidth" format="integer" />
+        <attr name="clockBallColor" format="color" />
+        <attr name="clockShowBorder" format="boolean" />
+        <attr name="clockBorderColor" format="color" />
+        <attr name="clockBorderWidth" format="integer" />
     </declare-styleable>
 </resources>

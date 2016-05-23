@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:custom="http://schemas.android.com/apk/res/suzp1984.github.io.androidclock"
+    xmlns:clock="http://schemas.android.com/apk/res/suzp1984.github.io.androidclock"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -15,10 +14,10 @@
         android:id="@+id/clock"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        custom:ballColor="@color/ball"
-        custom:showBorder="true"
-        custom:borderColor="@color/colorAccent"
-        custom:borderWidth="2"
+        clock:clockBallColor="@color/ball"
+        clock:clockShowBorder="true"
+        clock:clockBorderColor="@color/colorAccent"
+        clock:clockBorderWidth="2"
         />
 
-</LinearLayout>
+</FrameLayout>

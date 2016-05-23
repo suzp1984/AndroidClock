@@ -307,10 +307,10 @@ public class ClockView extends View {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ClockView, 0, 0);
 
         try {
-            mBallColor = a.getColor(R.styleable.ClockView_ballColor, 0x201f1f);
-            mShowBorder = a.getBoolean(R.styleable.ClockView_showBorder, false);
-            mBorderColor = a.getColor(R.styleable.ClockView_borderColor, 0xffff0000);
-            mBorderWidth = a.getInt(R.styleable.ClockView_borderWidth, 2);
+            mBallColor = a.getColor(R.styleable.ClockView_clockBallColor, 0x201f1f);
+            mShowBorder = a.getBoolean(R.styleable.ClockView_clockShowBorder, false);
+            mBorderColor = a.getColor(R.styleable.ClockView_clockBorderColor, 0xffff0000);
+            mBorderWidth = a.getInt(R.styleable.ClockView_clockBorderWidth, 2);
         } finally {
             a.recycle();
         }
