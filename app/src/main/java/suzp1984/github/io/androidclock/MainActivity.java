@@ -11,8 +11,7 @@ import suzp1984.github.io.androidclock.widget.ClockView;
 
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.clock)
-    ClockView mClockView;
+    @BindView(R.id.clock) ClockView clock;
 
     private Unbinder mButterUnbinder;
 
@@ -28,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        if (mClockView != null) {
-            Log.d("MainActivity", "width = " + mClockView.getWidth() + "; height = " + mClockView.getHeight());
+        if (clock != null) {
+            Log.d("MainActivity", "width = " + clock.getWidth() + "; height = " + clock.getHeight());
         }
 
     }

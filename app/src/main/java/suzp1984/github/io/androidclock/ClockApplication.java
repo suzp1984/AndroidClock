@@ -4,6 +4,8 @@ import android.app.Application;
 import android.os.StrictMode;
 import android.util.Log;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by jacobsu on 5/22/16.
  */
@@ -21,6 +23,8 @@ public class ClockApplication extends Application {
 
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                         .detectAll().penaltyLog().build());
+
+            ButterKnife.setDebug(true);
         }
 
         super.onCreate();
