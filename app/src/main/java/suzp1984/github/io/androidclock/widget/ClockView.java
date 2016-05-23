@@ -11,11 +11,9 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Vector;
 
 import suzp1984.github.io.androidclock.R;
 
@@ -187,6 +185,8 @@ public class ClockView extends View {
 
     private List<Ball> mBalls;
 
+    private Timer mTimer;
+
     public ClockView(Context context) {
         super(context);
 
@@ -236,6 +236,27 @@ public class ClockView extends View {
 
         mRadius = (w - mMarginLeft * 2) * 8 / (106 * 9);
         mArcPadding = mRadius / 8;
+    }
+
+    @Override
+    public void onFinishInflate () {
+        super.onFinishInflate();
+
+        // Log.e("ClockView", "onFinishInflate");
+    }
+
+    @Override
+    public void onAttachedToWindow () {
+        super.onAttachedToWindow();
+
+        startTimer();
+    }
+
+    @Override
+    public void onDetachedFromWindow () {
+        super.onDetachedFromWindow();
+
+        cancelTimer();
     }
 
 /*    @Override
@@ -312,8 +333,19 @@ public class ClockView extends View {
         mRectPaint.setStrokeWidth(mBorderWidth);
         mRectPaint.setStyle(Paint.Style.STROKE);
 
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
+        Calendar c = Calendar.getInstance();
+        mCurrentHours = c.get(Calendar.HOUR);
+        mCurrentMinutes = c.get(Calendar.MINUTE);
+        mCurrentSeconds = c.get(Calendar.SECOND);
+
+    }
+
+    private void startTimer() {
+        if (mTimer == null) {
+            mTimer = new Timer();
+        }
+
+        mTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Calendar c = Calendar.getInstance();
@@ -360,6 +392,14 @@ public class ClockView extends View {
 
             }
         }, 0, 50);
+
+    }
+
+    private void cancelTimer() {
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
     }
 
     private void drawDigit(Canvas canvas, int x, int y, int numb) {
@@ -381,13 +421,6 @@ public class ClockView extends View {
     }
 
     private void render(Canvas canvas) {
-        /*
-        Calendar c = Calendar.getInstance();
-
-        int hour = c.get(Calendar.HOUR);
-        int minutes = c.get(Calendar.MINUTE);
-        int seconds = c.get(Calendar.SECOND);
-        */
 
         int hour = mCurrentHours;
         int minutes = mCurrentMinutes;
@@ -406,12 +439,6 @@ public class ClockView extends View {
         drawDigit(canvas, mMarginLeft + (mRadius + mArcPadding) * 78, mMarginTop, seconds / 10);
         drawDigit(canvas, mMarginLeft + (mRadius + mArcPadding) * 93, mMarginTop, seconds % 10);
 
-        /*List<Ball> balls;
-
-        synchronized (this) {
-            balls = new ArrayList<>(mBalls.size());
-            Collections.copy(balls, mBalls);
-        }*/
 
         synchronized (this) {
             for (int i = 0; i < mBalls.size(); i++) {
