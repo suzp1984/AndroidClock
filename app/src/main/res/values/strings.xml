@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AndroidClock</string>
+    <string name="clock_in_native_view">Clock in Native View</string>
+    <string name="cordova_clock">Cordova Clock</string>
 </resources>

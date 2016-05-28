@@ -1,51 +1,34 @@
 package suzp1984.github.io.androidclock;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
-import suzp1984.github.io.androidclock.widget.ClockView;
 
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.clock)
-    ClockView clock;
-
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-
-    private Unbinder mButterUnbinder;
+    private Unbinder mUnbinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mButterUnbinder = ButterKnife.bind(this);
-
-        if (toolbar != null) {
-
-            setSupportActionBar(toolbar);
-        }
+        mUnbinder = ButterKnife.bind(this);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    @OnClick(R.id.native_clock)
+    public void startNativeClock() {
+        Intent intent = new Intent(this, NativeClockActivity.class);
 
-        if (clock != null) {
-            Log.d("MainActivity", "width = " + clock.getWidth() + "; height = " + clock.getHeight());
-        }
-
+        startActivity(intent);
     }
 
-    @Override
-    protected void onDestroy() {
-        mButterUnbinder.unbind();
-        super.onDestroy();
+    @OnClick(R.id.cordova_clock)
+    public void startCordovaClock() {
+
     }
 }
