@@ -10,10 +10,7 @@
     <feature name="Battery">
         <param name="android-package" value="org.apache.cordova.batterystatus.BatteryListener" />
     </feature>
-    <feature name="Echo">
-        <param name="android-package" value="org.apache.cordova.echo.EchoPlugin" />
-        <param name="onload" value="true" />
-    </feature>
+
     <allow-intent href="market:*" />
     <name>HelloCordova</name>
     <description>

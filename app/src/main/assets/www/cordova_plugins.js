@@ -13,12 +13,6 @@ module.exports = [
         "clobbers": [
             "navigator.battery"
         ]
-    },
-    {
-        "file": "plugins/cordova-plugin-echo/echo.js",
-        "id": "cordova-plugin-echo.echo",
-        "pluginId": "cordova-plugin-echo",
-        "runs": true
     }
 ];
 module.exports.metadata = 
