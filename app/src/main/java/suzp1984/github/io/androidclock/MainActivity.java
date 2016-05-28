@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.cordova_clock)
     public void startCordovaClock() {
+        Intent intent = new Intent(this, CordovaClockActivity.class);
 
+        startActivity(intent);
     }
 }
